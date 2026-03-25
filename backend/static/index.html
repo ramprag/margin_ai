@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Margin AI Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .accent-gradient {
+            background: linear-gradient(135deg, #2dd4bf 0%, #8b5cf6 100%);
+        }
+    </style>
+</head>
+
+<body class="p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight">Margin AI</h1>
+                <p class="text-slate-400 mt-1">Real-time Token Optimization & Savings</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span
+                    class="px-3 py-1 bg-teal-500/10 text-teal-400 rounded-full text-sm font-medium border border-teal-500/20">System
+                    Online</span>
+                <button class="px-4 py-2 glass rounded-lg hover:bg-slate-800 transition">Settings</button>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="glass p-6 rounded-2xl">
+                <p class="text-slate-400 text-sm font-medium">Total Savings</p>
+                <p id="totalSavings" class="text-3xl font-bold text-teal-400 mt-1">$12,450.75</p>
+                <div class="mt-4 text-xs text-slate-500 flex items-center">
+                    <span class="text-teal-400 inline-block mr-1">↑ 12%</span> vs last month
+                </div>
+            </div>
+            <div class="glass p-6 rounded-2xl">
+                <p class="text-slate-400 text-sm font-medium">Queries Cached</p>
+                <p id="cachedQueries" class="text-3xl font-bold mt-1">1,240</p>
+                <div class="mt-4 text-xs text-slate-500">Bypassed AI providers entirely</div>
+            </div>
+            <div class="glass p-6 rounded-2xl">
+                <p class="text-slate-400 text-sm font-medium">Avg. Latency</p>
+                <p class="text-3xl font-bold mt-1">12ms</p>
+                <div class="mt-4 text-xs text-slate-500">Local router overhead: < 2ms</div>
+                </div>
+                <div class="glass p-6 rounded-2xl">
+                    <p class="text-slate-400 text-sm font-medium">Blocked Injections</p>
+                    <p class="text-3xl font-bold text-rose-400 mt-1">4</p>
+                    <div class="mt-4 text-xs text-slate-500">Protected your system prompt</div>
+                </div>
+            </div>
+
+            <!-- Charts Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 glass p-8 rounded-2xl relative">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-semibold">Token Spend vs. Savings</h3>
+                        <select class="bg-transparent text-sm text-slate-400 focus:outline-none">
+                            <option>Last 7 Days</option>
+                            <option>Last 30 Days</option>
+                        </select>
+                    </div>
+                    <!-- Fixed height container to stop Chart.js infinite growth bug -->
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="glass p-8 rounded-2xl relative">
+                    <h3 class="text-lg font-semibold mb-6">Model Distribution</h3>
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="modelChart"></canvas>
+                    </div>
+                    <div id="modelLegend" class="mt-6 space-y-3">
+                        <!-- Legend Items -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Logs (Redacted) -->
+            <div class="mt-10 glass rounded-2xl overflow-hidden">
+                <div class="p-6 border-b border-slate-700/50 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">Optimized Traffic Log</h3>
+                    <button class="text-sm text-teal-400">View Full Logs</button>
+                </div>
+                <table class="w-full text-left">
+                    <thead class="bg-slate-800/50 text-slate-400 text-sm uppercase">
+                        <tr>
+                            <th class="p-4 font-medium">Query (Partial/Redacted)</th>
+                            <th class="p-4 font-medium">Route</th>
+                            <th class="p-4 font-medium">Status</th>
+                            <th class="p-4 font-medium">Cost Saving</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800 text-sm">
+                        <tr>
+                            <td class="p-4 text-slate-300">"What is the capital of [REDACTED]?"</td>
+                            <td class="p-4 font-medium text-teal-400">Lean (Llama-3)</td>
+                            <td class="p-4"><span
+                                    class="px-2 py-0.5 bg-teal-400/10 text-teal-400 rounded-lg text-xs">95% Saved</span>
+                            </td>
+                            <td class="p-4 text-slate-400">$0.0004</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 text-slate-300">"Analyze [REDACTED_CARD] details for..."</td>
+                            <td class="p-4 font-medium text-purple-400">Strong (GPT-4o)</td>
+                            <td class="p-4"><span
+                                    class="px-2 py-0.5 bg-slate-400/10 text-slate-300 rounded-lg text-xs">Quality
+                                    Priority</span></td>
+                            <td class="p-4 text-slate-400">$0.024</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 text-slate-300">"How do I redact [REDACTED_PHONE] in..."</td>
+                            <td class="p-4 font-medium text-teal-400">Cached (Redis)</td>
+                            <td class="p-4"><span
+                                    class="px-2 py-0.5 bg-blue-400/10 text-blue-400 rounded-lg text-xs">Cache Hit</span>
+                            </td>
+                            <td class="p-4 text-slate-400">$0.001</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script>
+            // Global Chart Instances
+            let costChart, modelChart;
+
+            function initCharts() {
+                const costCtx = document.getElementById('costChart').getContext('2d');
+                const modelCtx = document.getElementById('modelChart').getContext('2d');
+
+                costChart = new Chart(costCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Actual Spend',
+                            data: [0, 0, 0, 0, 0, 0, 0],
+                            borderColor: '#8b5cf6',
+                            tension: 0.4,
+                            fill: false
+                        }, {
+                            label: 'Avoided Spend (Savings)',
+                            data: [0, 0, 0, 0, 0, 0, 0],
+                            borderColor: '#2dd4bf',
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, border: { display: false }, beginAtZero: true },
+                            x: { grid: { display: false }, border: { display: false } }
+                        }
+                    }
+                });
+
+                modelChart = new Chart(modelCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Lean', 'Strong', 'Cache'],
+                        datasets: [{
+                            data: [0, 0, 0],
+                            backgroundColor: ['#14b8a6', '#8b5cf6', '#3b82f6'],
+                            borderWidth: 0,
+                            weight: 0.5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        cutout: '80%',
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            initCharts();
+
+            // Dynamic Data Fetch - Wire to live API
+            async function refreshData() {
+                try {
+                    const response = await fetch('/api/stats');
+                    if (!response.ok) throw new Error("API Offline");
+                    const data = await response.json();
+
+                    // Handle tiny decimal amounts cleanly
+                    const displaySavings = data.total_savings < 1 ? data.total_savings.toFixed(4) : data.total_savings.toLocaleString();
+                    document.getElementById('totalSavings').innerText = `$${displaySavings}`;
+                    document.getElementById('cachedQueries').innerText = data.queries_cached.toLocaleString();
+
+                    // Update Line Chart (Now perfectly synced to DB)
+                    costChart.data.labels = data.cost_over_time.days;
+                    costChart.data.datasets[0].data = data.cost_over_time.actual_cost;
+                    costChart.data.datasets[1].data = data.cost_over_time.saved_cost;
+                    costChart.update('none');
+
+                    // Update Doughnut Chart (Dynamic labels and data)
+                    modelChart.data.labels = data.top_models.map(m => m.name);
+                    modelChart.data.datasets[0].data = data.top_models.map(m => m.usage);
+                    modelChart.update('none');
+
+                    console.log("Margin AI: Live Stats Updated", data);
+                } catch (err) {
+                    console.error("Dashboard Sync Failed:", err);
+                }
+            }
+            refreshData(); // Initial load
+            setInterval(refreshData, 3000); // 3s for better 'real-time' demo feel
+        </script>
+</body>
+
+</html>
