@@ -4,10 +4,10 @@
   <p>Drop 50% of your token bill. Auto-redact PII. Support 100+ LLMs instantly.</p>
 
   <p>
-    <a href="#-quick-start"><b>Get Started</b></a> •
-    <a href="#-the-problem-were-solving"><b>Why Margin AI?</b></a> •
-    <a href="#-margin-ai-vs-the-world"><b>Comparisons</b></a> •
-    <a href="#-enterprise-features"><b>Features</b></a>
+    <a href="#quick-start"><b>Get Started</b></a> •
+    <a href="#the-problem-were-solving"><b>Why Margin AI?</b></a> •
+    <a href="#margin-ai-vs-the-world"><b>Comparisons</b></a> •
+    <a href="#enterprise-features"><b>Features</b></a>
   </p>
 
   <p>
