@@ -11,6 +11,14 @@
   </p>
 
   <p>
+    <b>📚 <a href="README.md">Documentation</a></b> &nbsp;|&nbsp; 
+    <b>🔌 <a href="API.md">API Reference</a></b> &nbsp;|&nbsp; 
+    <b>💻 <a href="SDK.md">SDK Integrations</a></b> &nbsp;|&nbsp; 
+    <b>🤝 <a href="CONTRIBUTING.md">Contributing</a></b> &nbsp;|&nbsp; 
+    <b>🛡️ <a href="SECURITY.md">Security</a></b>
+  </p>
+
+  <p>
     <a href="https://github.com/ramprag/margin-ai/stargazers"><img src="https://img.shields.io/github/stars/ramprag/margin-ai?style=social" alt="Stars"></a>
     <a href="https://github.com/ramprag/margin-ai/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
     <a href="https://hub.docker.com/r/ramprag/margin-ai"><img src="https://img.shields.io/docker/pulls/ramprag/margin-ai.svg" alt="Docker Pulls"></a>
