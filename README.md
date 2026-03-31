@@ -5,17 +5,9 @@
 
   <p>
     <a href="#quick-start"><b>Get Started</b></a> •
-    <a href="#the-problem-were-solving"><b>Why Margin AI?</b></a> •
-    <a href="#margin-ai-vs-the-world"><b>Comparisons</b></a> •
-    <a href="#enterprise-features"><b>Features</b></a>
-  </p>
-
-  <p>
-    <b>📚 <a href="README.md">Documentation</a></b> &nbsp;|&nbsp; 
-    <b>🔌 <a href="API.md">API Reference</a></b> &nbsp;|&nbsp; 
-    <b>💻 <a href="SDK.md">SDK Integrations</a></b> &nbsp;|&nbsp; 
-    <b>🤝 <a href="CONTRIBUTING.md">Contributing</a></b> &nbsp;|&nbsp; 
-    <b>🛡️ <a href="SECURITY.md">Security</a></b>
+    <a href="#problem"><b>Why Margin AI?</b></a> •
+    <a href="#comparisons"><b>Comparisons</b></a> •
+    <a href="#features"><b>Features</b></a>
   </p>
 
   <p>
@@ -73,6 +65,7 @@ curl -X POST http://localhost:8000/v1/chat/completions \
 
 ---
 
+<a id="quick-start"></a>
 ## 🚀 Quick Start
 
 Get the control plane and the real-time CFO dashboard running in your VPC in under 3 minutes.
@@ -96,6 +89,7 @@ open http://localhost:8000
 
 ---
 
+<a id="problem"></a>
 ## 🔥 The Problem We're Solving
 
 Building AI apps is easy. **Scaling AI unit economics is a nightmare.** 
@@ -108,6 +102,7 @@ If you send all of those invisible background loops to heavy models like `gpt-4o
 
 ---
 
+<a id="features"></a>
 ## 🛡️ Enterprise Features
 
 ### 1. Dynamic Cost Routing (Intelligent Proxy)
@@ -133,6 +128,7 @@ If Anthropic or OpenAI experiences an outage or throws a `429 Too Many Requests`
 
 ---
 
+<a id="comparisons"></a>
 ## 🥊 Margin AI vs. The World
 
 Why not just use another AI Gateway like LiteLLM? Because generic routing layers require you to write massive custom logic just to save money, and SaaS gateways add latency while charging you extra.
