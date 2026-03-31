@@ -53,7 +53,7 @@ async def get_stats():
 @app.post("/v1/chat/completions")
 async def chat_completions(request: Request, api_key: str = Depends(get_api_key)):
     """
-    Production-grade AI Gateway Proxy with Governance and ROI tracking.
+    Production-grade AI Gateway with Governance and ROI tracking.
     """
     start_time = time.time()
     
@@ -97,7 +97,7 @@ async def chat_completions(request: Request, api_key: str = Depends(get_api_key)
     if is_valid_key(settings.OPENAI_API_KEY):
         await shadow_engine.fork_shadow_request(req_data.model_dump(exclude_none=True))
     
-    # 5. Cascading Provider Proxy
+    # 5. Cascading Provider Gateway
     try:
         completion_data = await cascade_manager.execute_with_cascade(req_data.model_dump(exclude_none=True))
     except httpx.HTTPStatusError as e:

@@ -21,7 +21,7 @@
 
 ## ⚡ The Magic: Integration in < 10 Seconds
 
-Margin AI is a **100% transparent, drop-in replacement proxy** that natively supports 100+ LLMs behind the unified OpenAI API standard. You don't need to rewrite your agent's complex logic or learn a new SDK.
+Margin AI is a **100% transparent, drop-in replacement gateway** that natively supports 100+ LLMs behind the unified OpenAI API standard. You don't need to rewrite your agent's complex logic or learn a new SDK.
 
 Change exactly **ONE** line in your codebase to point to your local Margin AI Gateway:
 
@@ -96,7 +96,7 @@ If you are building a **multi-step autonomous agent** (like Manus, Devin, or dee
 
 If you send all of those invisible background loops to heavy models like `gpt-4o` or `claude-3-5-sonnet`, your token inference costs will explode. For most scaling startups, **the LLM token bill has already surpassed their AWS cloud hosting bill.**
 
-**Margin AI is an enterprise infrastructure layer that acts as a transparent proxy inside your VPC.** It dynamically intercepts your backend traffic, serves exact matches from a cache, routes repetitive background tasks to lightning-fast fallback models (like Llama-3 via Groq), and automatically redacts sensitive PII from outbound payloads—saving you up to **60% on your total API bill** across 100+ models.
+**Margin AI is an enterprise infrastructure layer that acts as a transparent control plane inside your VPC.** It dynamically intercepts your backend traffic, serves exact matches from a cache, routes repetitive background tasks to lightning-fast fallback models (like Llama-3 via Groq), and automatically redacts sensitive PII from outbound payloads—saving you up to **60% on your total API bill** across 100+ models.
 
 ---
 
@@ -141,7 +141,7 @@ Margin AI is specifically designed as an **Agent Cost-Control Layer**.
 | **Added Latency** | **< 2ms** | < 5ms | ~50ms |
 | **ROI Dashboard** | ✅ Live Avoided Spend Tracker| ⚠️ Basic Request Logs | ❌ Basic AI Logs |
 
-**The Verdict:** If you want a basic proxy that universally formats API calls, use LiteLLM. If you want an intelligent control plane that **automatically slashes your multi-step agent bill in half** while keeping your PII securely in your VPC, use Margin AI.
+**The Verdict:** If you want a basic gateway that universally formats API calls, use LiteLLM. If you want an intelligent control plane that **automatically slashes your multi-step agent bill in half** while keeping your PII securely in your VPC, use Margin AI.
 
 ---
 
