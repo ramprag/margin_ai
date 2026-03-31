@@ -7,9 +7,11 @@ class SemanticCache:
     """
     Sub-ms caching using Redis for recurring queries.
     Uses prompt SHA256 hashes + basic text normalization.
+    Falls back to an in-memory dictionary if Redis is unavailable.
     """
     def __init__(self):
         self._redis = None
+        self._memory_cache = {} # Fallback dictionary
 
     @property
     def redis(self):
@@ -17,51 +19,48 @@ class SemanticCache:
             import redis
             try:
                 self._redis = redis.from_url(settings.REDIS_URL, decode_responses=True)
-                # Test connection
                 self._redis.ping()
             except Exception as e:
                 import logging
-                logging.getLogger(__name__).error(f"Redis connection failed: {e}")
-                return None
-        return self._redis
+                logging.getLogger(__name__).warning("Redis unavailable. Falling back to in-memory Cache.")
+                self._redis = False # Mark as failed to prevent retries
+        return self._redis if self._redis else None
 
     def _normalize_prompt(self, prompt: str) -> str:
-        """
-        Removes whitespace and lowercases to avoid cache misses on small changes.
-        """
         return " ".join(prompt.lower().split())
 
     def get_cached_response(self, prompt: str) -> dict:
-        """
-        Retrieves a cached JSON response if it exists.
-        """
-        if not self.redis:
-            return None
-            
         normalized_prompt = self._normalize_prompt(prompt)
         prompt_hash = hashlib.sha256(normalized_prompt.encode()).hexdigest()
         
-        try:
-            cached_data = self.redis.get(f"cache:{prompt_hash}")
-            if cached_data:
-                return json.loads(cached_data)
-        except Exception:
-            pass
+        # 1. Try Redis
+        if self.redis:
+            try:
+                cached_data = self.redis.get(f"cache:{prompt_hash}")
+                if cached_data:
+                    return json.loads(cached_data)
+            except Exception:
+                pass
+                
+        # 2. Try Memory Fallback
+        if prompt_hash in self._memory_cache:
+            return self._memory_cache[prompt_hash]
+            
         return None
 
     def set_cached_response(self, prompt: str, response: dict, ttl: int = 3600):
-        """
-        Sets a new cache entry for a given prompt. Default TTL: 1 hour.
-        """
-        if not self.redis:
-            return
-            
         normalized_prompt = self._normalize_prompt(prompt)
         prompt_hash = hashlib.sha256(normalized_prompt.encode()).hexdigest()
         
-        try:
-            self.redis.setex(f"cache:{prompt_hash}", ttl, json.dumps(response))
-        except Exception:
-            pass
+        # 1. Try Redis
+        if self.redis:
+            try:
+                self.redis.setex(f"cache:{prompt_hash}", ttl, json.dumps(response))
+                return
+            except Exception:
+                pass
+                
+        # 2. Fallback to Memory
+        self._memory_cache[prompt_hash] = response
 
 semantic_cache = SemanticCache()

@@ -81,7 +81,12 @@ async def chat_completions(request: Request, api_key: str = Depends(get_api_key)
     cached = semantic_cache.get_cached_response(sanitized_prompt)
     if cached:
         logger.info("Semantic Cache Hit")
-        return {**cached, "margin_ai_optimized": True, "cached": True}
+        response_data = {**cached, "margin_ai_optimized": True, "cached": True}
+        response_data["strategy"] = "cache"
+        response_data["latency_ms"] = int((time.time() - start_time) * 1000)
+        response_data["estimated_cost"] = 0.0
+        db_manager.log_request(response_data)
+        return response_data
         
     # 3. Intelligent Model Routing
     target_model, strategy = routing_engine.determine_model(sanitized_prompt)

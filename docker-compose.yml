@@ -1,12 +1,10 @@
-version: '3.8'
-
 services:
   gateway:
     build: .
     ports:
       - "8000:8000"
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - REDIS_URL=redis://redis:6379/0
       - DATABASE_URL=sqlite:///./margin_ai.db
     depends_on:

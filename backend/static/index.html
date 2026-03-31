@@ -59,12 +59,12 @@
             </div>
             <div class="glass p-6 rounded-2xl">
                 <p class="text-slate-400 text-sm font-medium">Avg. Latency</p>
-                <p class="text-3xl font-bold mt-1">12ms</p>
+                <p id="avgLatency" class="text-3xl font-bold mt-1">12ms</p>
                 <div class="mt-4 text-xs text-slate-500">Local router overhead: < 2ms</div>
                 </div>
                 <div class="glass p-6 rounded-2xl">
                     <p class="text-slate-400 text-sm font-medium">Blocked Injections</p>
-                    <p class="text-3xl font-bold text-rose-400 mt-1">4</p>
+                    <p id="blockedInjections" class="text-3xl font-bold text-rose-400 mt-1">4</p>
                     <div class="mt-4 text-xs text-slate-500">Protected your system prompt</div>
                 </div>
             </div>
@@ -111,31 +111,8 @@
                             <th class="p-4 font-medium">Cost Saving</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-800 text-sm">
-                        <tr>
-                            <td class="p-4 text-slate-300">"What is the capital of [REDACTED]?"</td>
-                            <td class="p-4 font-medium text-teal-400">Lean (Llama-3)</td>
-                            <td class="p-4"><span
-                                    class="px-2 py-0.5 bg-teal-400/10 text-teal-400 rounded-lg text-xs">95% Saved</span>
-                            </td>
-                            <td class="p-4 text-slate-400">$0.0004</td>
-                        </tr>
-                        <tr>
-                            <td class="p-4 text-slate-300">"Analyze [REDACTED_CARD] details for..."</td>
-                            <td class="p-4 font-medium text-purple-400">Strong (GPT-4o)</td>
-                            <td class="p-4"><span
-                                    class="px-2 py-0.5 bg-slate-400/10 text-slate-300 rounded-lg text-xs">Quality
-                                    Priority</span></td>
-                            <td class="p-4 text-slate-400">$0.024</td>
-                        </tr>
-                        <tr>
-                            <td class="p-4 text-slate-300">"How do I redact [REDACTED_PHONE] in..."</td>
-                            <td class="p-4 font-medium text-teal-400">Cached (Redis)</td>
-                            <td class="p-4"><span
-                                    class="px-2 py-0.5 bg-blue-400/10 text-blue-400 rounded-lg text-xs">Cache Hit</span>
-                            </td>
-                            <td class="p-4 text-slate-400">$0.001</td>
-                        </tr>
+                    <tbody id="logsTableBody" class="divide-y divide-slate-800 text-sm">
+                        <!-- Dynamic rows injected via JS -->
                     </tbody>
                 </table>
             </div>
@@ -209,8 +186,10 @@
 
                     // Handle tiny decimal amounts cleanly
                     const displaySavings = data.total_savings < 1 ? data.total_savings.toFixed(4) : data.total_savings.toLocaleString();
-                    document.getElementById('totalSavings').innerText = `$${displaySavings}`;
-                    document.getElementById('cachedQueries').innerText = data.queries_cached.toLocaleString();
+                    document.getElementById('totalSavings').innerText = '$' + displaySavings;
+                    document.getElementById('cachedQueries').innerText = data.queries_cached;
+                    document.getElementById('avgLatency').innerText = data.avg_latency + 'ms';
+                    document.getElementById('blockedInjections').innerText = data.blocked_injections;
 
                     // Update Line Chart (Now perfectly synced to DB)
                     costChart.data.labels = data.cost_over_time.days;
@@ -223,6 +202,24 @@
                     modelChart.data.datasets[0].data = data.top_models.map(m => m.usage);
                     modelChart.update('none');
 
+                    // Update Traffic Logs Table
+                    const logsBody = document.getElementById('logsTableBody');
+                    if (data.recent_logs && data.recent_logs.length > 0) {
+                        logsBody.innerHTML = '';
+                        data.recent_logs.forEach(log => {
+                            const savingsStr = log.savings_amt > 0 ? `$${log.savings_amt.toFixed(4)}` : '$0.0000';
+                            logsBody.innerHTML += `
+                                <tr>
+                                    <td class="p-4 text-slate-300">REQ-${log.id} [REDACTED]</td>
+                                    <td class="p-4 font-medium text-slate-100">${log.model}</td>
+                                    <td class="p-4">
+                                        <span class="px-2 py-0.5 bg-${log.status_color}-400/10 text-${log.status_color}-400 rounded-lg text-xs">${log.status_text}</span>
+                                    </td>
+                                    <td class="p-4 text-slate-400">${savingsStr}</td>
+                                </tr>
+                            `;
+                        });
+                    }
                     console.log("Margin AI: Live Stats Updated", data);
                 } catch (err) {
                     console.error("Dashboard Sync Failed:", err);

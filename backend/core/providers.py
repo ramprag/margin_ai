@@ -101,6 +101,25 @@ class GroqProvider(OpenAIProvider):
         super().__init__(api_key)
         self.url = "https://api.groq.com/openai/v1/chat/completions"
 
+class GeminiProvider(OpenAIProvider):
+    def __init__(self, api_key: str):
+        super().__init__(api_key)
+        # Google's native OpenAI-compatible wrapper endpoint
+        self.url = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+    
+    async def complete(self, body: Dict[str, Any]) -> Dict[str, Any]:
+        """Gemini requires slightly different error handling for its OpenAI endpoint."""
+        try:
+            return await super().complete(body)
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                # Map Gemini model names automatically if missing
+                logger.warning(f"Gemini 404 for model {body.get('model')}. Falling back to gemini-pro.")
+                body["model"] = "gemini-pro"
+                return await super().complete(body)
+            raise e
+
+
 class ProviderFactory:
     @staticmethod
     def get_provider(model_name: str) -> LLMProvider:
@@ -115,10 +134,10 @@ class ProviderFactory:
             # Groq is excellent for open-source models like Llama3/Mixtral
             return GroqProvider(settings.GROQ_API_KEY)
         elif "gemini" in model_name:
-            # Ensure Gemini uses the Gemini key explicitly (stub)
-            pass
+            return GeminiProvider(settings.GEMINI_API_KEY)
             
         # Default to OpenAI or generic handler
         return OpenAIProvider(settings.OPENAI_API_KEY)
+
 
 provider_factory = ProviderFactory()
