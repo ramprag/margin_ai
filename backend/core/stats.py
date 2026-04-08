@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, timedelta
 from typing import List, Dict
+from backend.core.analytics import analytics_service
 
 class StatsService:
     @staticmethod
@@ -22,15 +23,18 @@ class StatsService:
         cursor = conn.cursor()
         
         # Proper Global Avoided Spend Calculation
-        # Baseline GPT-4o Cost is ~$15 per 1M blended tokens = 0.000015 per token
+        # Baseline = "What would this cost on GPT-4o at full price?"
+        # Uses real pricing from AnalyticsService instead of a hardcoded constant.
         savings = 0.0
         try:
-            cursor.execute("SELECT SUM(total_tokens), SUM(cost) FROM request_logs")
+            cursor.execute("SELECT SUM(prompt_tokens), SUM(completion_tokens), SUM(cost) FROM request_logs")
             global_row = cursor.fetchone()
-            global_tokens = global_row[0] or 0
-            global_cost = global_row[1] or 0.0
+            global_input_tokens = global_row[0] or 0
+            global_output_tokens = global_row[1] or 0
+            global_cost = global_row[2] or 0.0
             
-            baseline_global = global_tokens * 0.000015
+            # Calculate what GPT-4o would have cost for the same traffic
+            baseline_global = analytics_service.calculate_cost("gpt-4o", global_input_tokens, global_output_tokens)
             savings = max(0, baseline_global - global_cost)
         except Exception:
             pass
@@ -50,28 +54,30 @@ class StatsService:
                 days_array.append(target_date[-5:]) # MM-DD
                 
                 cursor.execute(
-                    f"SELECT SUM(cost), SUM(total_tokens) FROM request_logs WHERE {date_filter}",
+                    f"SELECT SUM(cost), SUM(prompt_tokens), SUM(completion_tokens) FROM request_logs WHERE {date_filter}",
                     (target_date,)
                 )
                 row = cursor.fetchone()
                 day_cost = row[0] or 0.0
-                day_tokens = row[1] or 0
+                day_input_tokens = row[1] or 0
+                day_output_tokens = row[2] or 0
                 
                 actual_cost_array.append(day_cost)
                 
-                baseline_cost = day_tokens * 0.000015
+                baseline_cost = analytics_service.calculate_cost("gpt-4o", day_input_tokens, day_output_tokens)
                 saved_amt = max(0, baseline_cost - day_cost)
                 saved_cost_array.append(saved_amt)
 
             # Get 5 recent logs for the table
-            cursor.execute("SELECT id, model, strategy, cost, cached, total_tokens FROM request_logs ORDER BY timestamp DESC LIMIT 5")
+            cursor.execute("SELECT id, model, strategy, cost, cached, prompt_tokens, completion_tokens FROM request_logs ORDER BY timestamp DESC LIMIT 5")
             for row in cursor.fetchall():
                 is_cached = bool(row[4])
                 model_name = str(row[1])
                 cost = row[3] or 0.0
-                total_tokens = row[5] or 50  # Fallback 50 tokens
+                p_tokens = row[5] or 25
+                c_tokens = row[6] or 25
                 
-                baseline_log_cost = total_tokens * 0.000015
+                baseline_log_cost = analytics_service.calculate_cost("gpt-4o", p_tokens, c_tokens)
                 savings_amt = baseline_log_cost if is_cached else max(0, baseline_log_cost - cost)
                 
                 status_text = "Cache Hit" if is_cached else ("95% Saved" if "llama" in model_name.lower() else "Quality Priority")
