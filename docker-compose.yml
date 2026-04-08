@@ -5,12 +5,43 @@ services:
       - "8000:8000"
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
       - REDIS_URL=redis://redis:6379/0
-      - DATABASE_URL=sqlite:///./margin_ai.db
+      - DATABASE_URL=postgresql://marginai:marginai@postgres:5432/marginai
+      - MARGIN_API_KEYS=${MARGIN_API_KEYS:-}
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
 
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: marginai
+      POSTGRES_PASSWORD: marginai
+      POSTGRES_DB: marginai
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marginai"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  pgdata:

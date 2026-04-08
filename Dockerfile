@@ -11,6 +11,9 @@ RUN apt-get update && apt-get install -y \
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Download the spaCy NER model required by Presidio for context-aware PII detection
+RUN python -m spacy download en_core_web_lg
+
 # Copy source code
 COPY . .
 

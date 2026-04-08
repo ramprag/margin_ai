@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     PII_REDACTION_ENABLED: bool = True
     PROMPT_INJECTION_CHECK_ENABLED: bool = True
     
+    # Gateway Authentication (comma-separated list of valid API keys; empty = open mode)
+    MARGIN_API_KEYS: str = os.getenv("MARGIN_API_KEYS", "")
+    
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
 
 settings = Settings()

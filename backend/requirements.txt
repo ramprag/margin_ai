@@ -7,12 +7,18 @@ redis==5.0.4
 openai==1.35.1
 python-dotenv==1.0.1
 tiktoken==0.7.0
+cachetools==5.3.3
 # Forcing CPU versions to keep gateway slim (Avoiding 3GB of GPU bloat)
 --extra-index-url https://download.pytorch.org/whl/cpu
 torch==2.3.1+cpu
 sentence-transformers==3.0.1
-# To replace spaCy with a lightweight PII checker if needed
+# Context-aware PII detection (NLP-based, not just regex)
 presidio-analyzer==2.2.353
 presidio-anonymizer==2.2.353
-# For high-speed async
+# Presidio requires a spaCy model for NER
+spacy==3.7.5
+# PostgreSQL async driver (production database)
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+# For high-speed async event loop (Linux only)
 uvloop==0.19.0; sys_platform != 'win32'

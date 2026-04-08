@@ -70,8 +70,16 @@ async def chat_completions(request: Request, api_key: str = Depends(get_api_key)
     last_user_message = last_user_message_obj.content
     
     # 1. Security Firewall (PII & Injection)
-    if security_service.check_prompt_injection(last_user_message):
+    is_injection, matched_pattern = security_service.check_prompt_injection(last_user_message)
+    if is_injection:
         logger.warning(f"Blocked injection attempt: {last_user_message[:50]}...")
+        # Log the real security event to the database for the CFO Dashboard
+        db_manager.log_security_event(
+            event_type="injection_blocked",
+            pattern_matched=matched_pattern,
+            prompt_preview=last_user_message,
+            source_ip=request.client.host if request.client else None
+        )
         raise HTTPException(status_code=400, detail="Security Block: Potential injection detected.")
     
     sanitized_prompt = security_service.redact_pii(last_user_message)
@@ -80,8 +88,11 @@ async def chat_completions(request: Request, api_key: str = Depends(get_api_key)
     # 2. Semantic Cache Bypass
     cached = semantic_cache.get_cached_response(sanitized_prompt)
     if cached:
+        import uuid
         logger.info("Semantic Cache Hit")
-        response_data = {**cached, "margin_ai_optimized": True, "cached": True}
+        # Ensure cache hit has a unique ID for the logging table to avoid primary key conflicts
+        cache_hit_id = f"cache-{uuid.uuid4()}"
+        response_data = {**cached, "id": cache_hit_id, "margin_ai_optimized": True, "cached": True}
         response_data["strategy"] = "cache"
         response_data["latency_ms"] = int((time.time() - start_time) * 1000)
         response_data["estimated_cost"] = 0.0

@@ -6,17 +6,25 @@ class StatsService:
     @staticmethod
     def get_stats():
         """
-        Returns real analytics data mixed with trend simulation.
+        Returns real analytics data from the database.
+        Supports both SQLite and PostgreSQL syntax automatically.
         """
         from backend.core.database import db_manager
         db_stats = db_manager.get_summary_stats()
         
-        cursor = db_manager.get_cursor()
+        is_pg = db_manager.is_postgres
+        placeholder = "%s" if is_pg else "?"
+        # PostgreSQL uses timestamp::date or DATE(timestamp), both work, 
+        # but the parameterized placeholder differs
+        date_filter = f"DATE(timestamp) = {placeholder}"
+        
+        conn = db_manager._get_connection()
+        cursor = conn.cursor()
         
         # Proper Global Avoided Spend Calculation
         # Baseline GPT-4o Cost is ~$15 per 1M blended tokens = 0.000015 per token
         savings = 0.0
-        if cursor:
+        try:
             cursor.execute("SELECT SUM(total_tokens), SUM(cost) FROM request_logs")
             global_row = cursor.fetchone()
             global_tokens = global_row[0] or 0
@@ -24,6 +32,8 @@ class StatsService:
             
             baseline_global = global_tokens * 0.000015
             savings = max(0, baseline_global - global_cost)
+        except Exception:
+            pass
             
         display_savings = round(savings, 4) if savings < 1 else round(savings, 2)
         
@@ -33,13 +43,16 @@ class StatsService:
         saved_cost_array = []
         recent_logs = []
         
-        if cursor:
+        try:
             # 7-day array logic
             for i in range(6, -1, -1):
                 target_date = (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d')
                 days_array.append(target_date[-5:]) # MM-DD
                 
-                cursor.execute("SELECT SUM(cost), SUM(total_tokens) FROM request_logs WHERE DATE(timestamp) = ?", (target_date,))
+                cursor.execute(
+                    f"SELECT SUM(cost), SUM(total_tokens) FROM request_logs WHERE {date_filter}",
+                    (target_date,)
+                )
                 row = cursor.fetchone()
                 day_cost = row[0] or 0.0
                 day_tokens = row[1] or 0
@@ -56,7 +69,7 @@ class StatsService:
                 is_cached = bool(row[4])
                 model_name = str(row[1])
                 cost = row[3] or 0.0
-                total_tokens = row[5] or 50 # Fallback 50 tokens
+                total_tokens = row[5] or 50  # Fallback 50 tokens
                 
                 baseline_log_cost = total_tokens * 0.000015
                 savings_amt = baseline_log_cost if is_cached else max(0, baseline_log_cost - cost)
@@ -65,7 +78,7 @@ class StatsService:
                 status_color = "blue" if is_cached else ("teal" if "llama" in model_name.lower() else "slate")
                 
                 recent_logs.append({
-                    "id": str(row[0])[-8:], # Last 8 chars of UUID
+                    "id": str(row[0])[-8:],  # Last 8 chars of UUID
                     "model": model_name,
                     "strategy": row[2],
                     "cost": cost,
@@ -73,16 +86,26 @@ class StatsService:
                     "status_text": status_text,
                     "status_color": status_color
                 })
+        except Exception:
+            pass
 
-        if cursor:
+        try:
             cursor.execute("SELECT AVG(latency_ms) FROM request_logs")
             avg_row = cursor.fetchone()
-            avg_latency = int(avg_row[0]) if avg_row and avg_row[0] else 12
-        else:
-            avg_latency = 12
+            avg_latency = int(avg_row[0]) if avg_row and avg_row[0] else 0
+        except Exception:
+            avg_latency = 0
+
+        # Clean up connection
+        try:
+            cursor.close()
+            conn.close()
+        except Exception:
+            pass
             
         total_queries = db_stats.get("total_queries", 0)
-        blocked_injections = max(1, int(total_queries * 0.05)) if total_queries > 0 else 0
+        # Use real tracked data instead of fabricated percentages
+        blocked_injections = db_manager.get_blocked_injection_count()
 
         return {
             "total_savings": display_savings,
