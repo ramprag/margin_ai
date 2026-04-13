@@ -1,7 +1,7 @@
 <div align="center">
   <h1>🛡️ Margin AI</h1>
-  <h3>The Ultimate Cost & Compliance Pipeline for AI Agents.</h3>
-  <p>Drop 50% of your token bill. Auto-redact PII. Support 100+ LLMs instantly.</p>
+  <h3>The Hardened Enterprise Gateway for Privacy & ROI.</h3>
+  <p>Slash your AI token bill by 50%. Fix privacy in 1 line. Sub-ms vector search.</p>
 
   <p>
     <a href="#quick-start"><b>Get Started</b></a> •
@@ -72,7 +72,7 @@ Get the control plane and the real-time CFO dashboard running in your VPC in und
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/ramprag/margin-ai.git
+git clone https://github.com/ramprag/margin_ai.git
 cd margin-ai
 
 # 2. Add your Provider Keys
@@ -109,21 +109,25 @@ If you send all of those invisible background loops to heavy models like `gpt-4o
 Margin AI securely evaluates your payload's complexity **in-memory, entirely within your VPC**, before routing. 
 *   **Deep reasoning task?** It dynamically routes to `gpt-4o`. 
 *   **Trivial JSON formatting loop?** It immediately down-routes to `llama-3.1-8b-instant` on Groq. 
-*   **Result:** Maximize intelligence, minimize cost natively, with zero data leaving your secure perimeter for evaluation.
+*   **Result:** Pay only for the intelligence you actually need. Slash token bills by 50% by avoiding the 'GPT-4o tax' on simple tasks.
 
 ### 2. Auto-PII Data Loss Prevention (DLP)
-Selling to Enterprise/Healthcare? Agents reading local CRMs are a privacy nightmare. Margin AI automatically redacts sensitive customer data (SSNs, Credit Cards) *before* the payload ever hits an external LLM APIs. 
+Selling to Enterprise/Healthcare? Agents reading local CRMs are a privacy nightmare. Margin AI automatically redacts sensitive customer data (SSNs, Credit Cards) across **full conversation histories** *before* the payload ever hits an external LLM API. 
 *   **Result:** Instant SOC2/HIPAA compliance out of the box.
 
-### 3. Semantic Caching (15ms Latency)
-Why pay for the exact same answer twice? Margin AI intercepts repetitive user queries and serves the response from an ultra-fast Redis cache, bypassing the LLM completely. 
+### 3. Hardened Semantic Caching (Sub-ms Latency)
+Why pay for the exact same answer twice? Margin AI intercepts repetitive user queries and serves the response from an ultra-fast Redis cache combined with a **FAISS vector index** for sub-millisecond similarity search.
+*   **Data Integrity:** Unlike basic caches, our FAISS implementation uses ID-mapping to ensure 100% data integrity with zero desync risk.
 *   **Result:** 0 latency penalty, 100% token savings.
 
-### 4. Real-time CFO Analytics Dashboard
-Stop guessing where your AI budget is going. The built-in dashboard tracks your **Avoided Spend**, Top Models, and Cache hit rates across 100+ LLMs in real-time. Prove your ROI to investors and finance teams.
+### 4. End-to-End Streaming Analytics
+Most gateways lose visibility once you turn on `stream=true`. Margin AI captures token counts and cost ROI in real-time even for streaming payloads, ensuring your CFO dashboard is never out of sync.
 
-### 5. Auto-Failover & High Availability
-If Anthropic or OpenAI experiences an outage or throws a `429 Too Many Requests` error, Margin AI automatically cascades the request to the next best provider without alerting your end user. 
+### 5. Real-time CFO Analytics Dashboard
+Stop guessing where your AI budget is going. The built-in dashboard tracks your **Avoided Spend**, Top Models, and Cache hit rates across 100+ LLM providers. Prove your ROI to investors and finance teams with real dollar-and-cent metrics.
+
+### 6. Auto-Failover & High Availability
+If Anthropic or OpenAI experiences an outage or throws a `429`, Margin AI automatically cascades the request to the next best provider mid-stream.
 *   **Result:** Five-nines (99.999%) reliability for your agents.
 
 ---
