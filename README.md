@@ -73,7 +73,7 @@ Get the control plane and the real-time CFO dashboard running in your VPC in und
 ```bash
 # 1. Clone the repository
 git clone https://github.com/ramprag/margin_ai.git
-cd margin-ai
+cd margin_ai
 
 # 2. Add your Provider Keys
 cp .env.example .env
