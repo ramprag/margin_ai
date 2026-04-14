@@ -11,9 +11,9 @@
   </p>
 
   <p>
-    <a href="https://github.com/ramprag/margin-ai/stargazers"><img src="https://img.shields.io/github/stars/ramprag/margin-ai?style=social" alt="Stars"></a>
-    <a href="https://github.com/ramprag/margin-ai/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
-    <a href="https://hub.docker.com/r/ramprag/margin-ai"><img src="https://img.shields.io/docker/pulls/ramprag/margin-ai.svg" alt="Docker Pulls"></a>
+    <a href="https://github.com/ramprag/margin_ai/stargazers"><img src="https://img.shields.io/github/stars/ramprag/margin_ai?style=social" alt="Stars"></a>
+    <a href="https://github.com/ramprag/margin_ai/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
+    <a href="https://hub.docker.com/r/ramprag/margin_ai"><img src="https://img.shields.io/docker/pulls/ramprag/margin_ai.svg" alt="Docker Pulls"></a>
   </p>
 </div>
 

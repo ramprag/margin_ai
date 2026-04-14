@@ -142,25 +142,25 @@ class SecurityService:
 
     # Common prompt injection patterns (case-insensitive)
     INJECTION_PATTERNS = [
-        r"ignore previous instructions",
-        r"ignore all previous",
-        r"ignore above instructions",
-        r"disregard (all |any )?(previous |prior |above )?instructions",
-        r"system prompt:",
-        r"you are now an? (unfiltered|unrestricted|evil)",
-        r"jailbreak",
-        r"execute command",
-        r"reveal your (system )?prompt",
-        r"DAN mode",
-        r"do anything now",
+        r"\bignore previous instructions\b",
+        r"\bignore all previous\b",
+        r"\bignore above instructions\b",
+        r"\bdisregard (all |any )?(previous |prior |above )?instructions\b",
+        r"\bsystem prompt:\b",
+        r"\byou are now an? (unfiltered|unrestricted|evil)\b",
+        r"\bjailbreak\b",
+        r"\bexecute command\b",
+        r"\breveal your (system )?prompt\b",
+        r"\bDAN mode\b",
+        r"\bdo anything now\b",
         r"<\|end\|>",
         r"\[INST\]",
         r"<<SYS>>",
         r"<\|im_start\|>",
         r"<\|im_end\|>",
         r"###\s*(System|Human|Assistant)\s*:",  # Attempting to inject conversation turns
-        r"pretend you (are|have) no (restrictions|rules|guidelines)",
-        r"bypass (your |all )?(safety|content|ethical) (filters|guidelines|restrictions)",
+        r"\bpretend you (are|have) no (restrictions|rules|guidelines)\b",
+        r"\bbypass (your |all )?(safety|content|ethical) (filters|guidelines|restrictions)\b",
     ]
 
     # Unicode homoglyphs commonly used to bypass string matching

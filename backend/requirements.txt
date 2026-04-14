@@ -24,3 +24,5 @@ asyncpg==0.29.0
 psycopg2-binary==2.9.9
 # For high-speed async event loop (Linux only)
 uvloop==0.19.0; sys_platform != 'win32'
+# Testing
+pytest==8.2.2

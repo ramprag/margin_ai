@@ -1,9 +1,18 @@
 import json
 import logging
 import threading
+import hashlib
+import redis
+import numpy as np
 from typing import Optional, Dict, Any
 from cachetools import LRUCache
 from backend.config import settings
+
+try:
+    import faiss
+except ImportError:
+    faiss = None
+
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +70,6 @@ class FAISSIndex:
 
     def add(self, prompt_hash: str, embedding):
         """Add an embedding with a unique ID to ensure perfect sync."""
-        import numpy as np
         vec = np.array(embedding, dtype=np.float32).reshape(1, -1)
         norm = np.linalg.norm(vec)
         if norm > 0:
@@ -94,7 +102,6 @@ class FAISSIndex:
         """
         Sub-ms search using IDs to retrieve the correct hash.
         """
-        import numpy as np
         if not self._id_to_hash:
             return None
 

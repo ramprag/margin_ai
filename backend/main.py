@@ -44,19 +44,24 @@ app.mount("/dashboard", StaticFiles(directory="backend/static", html=True), name
 
 @app.on_event("startup")
 async def warmup_models():
-    """Pre-warm heavy NLP models during container boot."""
-    logger.info("Margin AI Gateway starting up...")
+    """Pre-warm heavy NLP models during container boot so first-request latency is low."""
+    logger.info("🚀 Margin AI Gateway warming up infrastructure...")
     try:
-        from backend.core.security import SecurityService
-        await run_in_threadpool(SecurityService.redact_pii, "warmup test")
-    except Exception: pass
-    try:
-        await run_in_threadpool(semantic_cache._get_embedding, "warmup")
-    except Exception: pass
-    try:
-        await run_in_threadpool(routing_engine._ensure_exemplar_embeddings)
-    except Exception: pass
-    logger.info("🚀 Margin AI Gateway is READY.")
+        # 1. Warm up Security Engine (Presidio / spaCy)
+        from backend.core.security import security_service
+        _ = security_service.redact_pii("Warmup: john@doe.com")
+        
+        # 2. Warm up Router (Sentence Transformers)
+        from backend.core.router import routing_engine
+        _ = await run_in_threadpool(routing_engine.determine_model, "Warmup query")
+        
+        # 3. Warm up Cache (FAISS / Transformers)
+        from backend.core.cache import semantic_cache
+        _ = await run_in_threadpool(semantic_cache.get_cached_response, "Warmup", "global")
+        
+        logger.info("✅ All core engines warmed up and ready for sub-ms routing.")
+    except Exception as e:
+        logger.error(f"Warmup failed (but ignoring to allow boot): {e}")
 
 
 @app.get("/")

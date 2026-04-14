@@ -1,5 +1,6 @@
 from typing import Dict, Any, Tuple, List
 import logging
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,6 @@ def _get_routing_model():
 
 def _cosine_similarity(vec_a, vec_b) -> float:
     """Compute cosine similarity between two vectors."""
-    import numpy as np
     dot = np.dot(vec_a, vec_b)
     norm_a = np.linalg.norm(vec_a)
     norm_b = np.linalg.norm(vec_b)
