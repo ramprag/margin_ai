@@ -4,6 +4,13 @@
   <p>Slash your AI token bill by 50%. Fix privacy in 1 line. Sub-ms vector search.</p>
 
   <p>
+    <a href="https://www.loom.com/share/4c427add7c824902ab896af97fd77ab8">
+      <img src="https://cdn.loom.com/sessions/thumbnails/4c427add7c824902ab896af97fd77ab8-with-play.gif" width="400" style="border-radius: 12px; border: 1px solid #eaeaea;" />
+    </a><br>
+    <b><a href="https://www.loom.com/share/4c427add7c824902ab896af97fd77ab8">Watch the 2-minute Demo Video</a></b>
+  </p>
+
+  <p>
     <a href="#quick-start"><b>Get Started</b></a> •
     <a href="#problem"><b>Why Margin AI?</b></a> •
     <a href="#comparisons"><b>Comparisons</b></a> •
@@ -102,6 +109,18 @@ If you send all of those invisible background loops to heavy models like `gpt-4o
 
 ---
 
+---
+
+<a id="visual-tour"></a>
+## 🖼️ Visual Tour
+
+| **Real-time CFO Dashboard** | **Privacy Firewall (PII)** | **1-Line Integration Proof** |
+| :---: | :---: | :---: |
+| ![CFO Dashboard](assets/launch/cfo_dashboard.png) | ![PII Redaction](assets/launch/pii_redaction_demo.png) | ![Snippet](assets/launch/frictionaless_snippet.png) |
+| *Track Avoided Spend and ROI.* | *Redact PII before it hits the cloud.* | *Literally 1 line change.* |
+
+---
+
 <a id="features"></a>
 ## 🛡️ Enterprise Features
 
@@ -150,6 +169,21 @@ Margin AI is specifically designed as an **Agent Cost-Control Layer**.
 | **ROI Dashboard** | ✅ Live Avoided Spend Tracker| ⚠️ Basic Request Logs | ❌ Basic AI Logs |
 
 **The Verdict:** If you want a basic gateway that universally formats API calls, use LiteLLM. If you want an intelligent control plane that **automatically slashes your multi-step agent bill in half** while keeping your PII securely in your VPC, use Margin AI.
+
+---
+
+## 🧪 Testing
+
+Margin AI is built for reliability. You can run the professional test suite (including unit tests for FAISS and PII algorithms) via `pytest`:
+
+```bash
+# Register dependencies
+pip install -r backend/requirements.txt
+pip install pytest
+
+# Run the suite
+pytest tests/test_unit.py tests/test_integration.py
+```
 
 ---
 
